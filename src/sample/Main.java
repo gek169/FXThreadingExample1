@@ -1,5 +1,6 @@
 package sample;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -15,33 +16,42 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
+    Runnable r1;
+    Button btn;
+    Label lbl;
+    int shouldKillThread = 0;
+    String LabelText = "<No Data>";
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Hello World!");
-        Button btn = new Button();
-        Label lbl = new Label();
-        Runnable r1 = new Runnable(){
+        btn = new Button();
+        lbl = new Label();
+        r1 = new Runnable(){
+            @Override
             public void run() {
-                for(int i = 0; i < 100; i++)
-                {
-                    System.out.println("Hello from the thread!");
+                for(int i = 0; i < 10000; i++){
                     try{sleep(200);}catch(InterruptedException ex){
                         ex.printStackTrace();
+                    }
+                    LabelText = "Counter = " + i;
+                    if(shouldKillThread > 0) {
+                        LabelText = "Thread Died at " + i;
+                        return;
                     }
                 }
             }
         };
         Thread t1 = new Thread(r1);
-        t1.start();
-        btn.setText("Say 'Hello World'");
-        lbl.setText("Bruh moment");
+
+        btn.setText("Kill The Thread.");
+        lbl.setText(LabelText);
         lbl.setTranslateY(40);
         lbl.setOnMouseClicked(
                 new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         System.out.println("You clicked me!");
+                        lbl.setText(LabelText);
                     }
                 }
         );
@@ -49,7 +59,8 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                System.out.println("Murdering Thread...");
+                shouldKillThread = 1;
             }
         });
 
@@ -58,5 +69,7 @@ public class Main extends Application {
         root.getChildren().add(lbl);
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
+        t1.start();
+        //Platform.runLater(r1);
     }
 }
