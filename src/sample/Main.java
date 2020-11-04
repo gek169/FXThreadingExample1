@@ -1,14 +1,22 @@
 package sample;
+
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
@@ -19,13 +27,17 @@ public class Main extends Application {
     Runnable r1;
     Button btn;
     Label lbl;
+    Canvas canny;
+    GraphicsContext gc;
     int shouldKillThread = 0;
     String LabelText = "<No Data>";
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("ooooo");
         btn = new Button();
         lbl = new Label();
+        canny = new Canvas(640,480);
+        gc = canny.getGraphicsContext2D();
         r1 = new Runnable(){
             @Override
             public void run() {
@@ -39,6 +51,7 @@ public class Main extends Application {
                         return;
                     }
                 }
+                LabelText = "You were so patient the thread actually completed.";
             }
         };
         Thread t1 = new Thread(r1);
@@ -65,9 +78,12 @@ public class Main extends Application {
         });
 
         StackPane root = new StackPane();
+        root.getChildren().add(canny);
         root.getChildren().add(btn);
         root.getChildren().add(lbl);
-        primaryStage.setScene(new Scene(root, 300, 250));
+
+
+        primaryStage.setScene(new Scene(root, 640, 480, Color.BLACK));
         primaryStage.show();
         t1.start();
         //Platform.runLater(r1);
